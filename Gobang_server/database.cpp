@@ -8,8 +8,9 @@ Database::Database()
 Database::Database(const QString db_type,const QString db_name,const QString user_name,const QString user_passwd)
 {
     db=QSqlDatabase::addDatabase(db_type);
+    db.setHostName("localhost");
     db.setDatabaseName(db_name);
-    db.setDatabaseName(user_name);
+    db.setUserName(user_name);
     db.setPassword(user_passwd);
     try{
         if(!db.open())
@@ -27,10 +28,25 @@ Database::~Database()
 bool Database::create_table()
 {
     QSqlQuery query=QSqlQuery(db);
-    if(!query.exec(CREATE_USER_INFORMATION))
+
+
+    //detect tables is exist
+    query.exec("show tables");
+    if(query.size()==2)
+        return true;
+
+    if(!query.exec(CREATE_USER_INFORMATION)){
+#ifndef DEBUG
+        cout << "create user_information error " << endl;
+#endif
         return false;
-    if(!query.exec(CREATE_FIGHT_HISTORY))
+    }
+    if(!query.exec(CREATE_FIGHT_HISTORY)){
+#ifndef DEBUG
+        cout << "create user_information error " << endl;
+#endif
         return false;
+    }
     return true;
 }
 
@@ -51,8 +67,14 @@ bool Database::query_user(const QString &name,const QString &passwd)
 bool Database::insert_user(const QString &name,const QString &passwd)
 {
     QSqlQuery query=QSqlQuery(db);
+
+    query.exec("select user_id from user_information where user_name='"+name+"'");
+    if(query.size()==1)
+        return false;
     QString str="insert into user_information (user_name,user_passwd) values('"+name+"','"+passwd+"')";
+#ifndef DEBUG
     cout << str.toStdString() << endl;
+#endif
     if(query.exec(str))
         return true;
     else
@@ -83,13 +105,10 @@ bool Database::fight_history(const QString &user_name,multimap<bool,QString> &mm
     if(!query.exec(str))
         return false;
     while(query.next()){
-        QChar ch=query.value(0).toChar();
+        bool b=query.value(0).toBool();
         QString str=query.value(1).toString();
-        bool b=ch==0?false:true;
         mmap.insert(make_pair(b,str));
     }
     return true;
-
-
 }
 
