@@ -5,9 +5,6 @@ Widget::Widget(QWidget *parent)
 {
     this->resize(WIDTH,HEIGHT);
     init();
-
-    piece.add(20,20,false);
-
 }
 
 Widget::~Widget()
@@ -18,13 +15,13 @@ Widget::~Widget()
 void Widget::init()
 {
     //init lines
-    int left_space=(WIDTH-COLUMN*SPACE+SPACE)>>1;
+    int left_space=WIDTH-COLUMN*SPACE+SPACE;
     int top_space=(HEIGHT-ROW*SPACE+SPACE)>>1;
 
     int num=0;
     for(int y=top_space,
         x0=left_space,
-        x1=WIDTH-left_space;
+        x1=WIDTH;
         num<ROW;
         num++,
         y+=SPACE)
@@ -37,12 +34,33 @@ void Widget::init()
         x+=SPACE)
         lines[num].setLine(x,y0,x,y1);
 
+    //black piece precede
+    black=true;
+
 
 }
 
 void Widget::mousePressEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
+
+    qDebug() << "mouse press " << black ;
+    if(event->button()==Qt::RightButton)
+        return ;
+
+    int x(event->x());
+    int y(event->y());
+    //convert mouse press point to piece point
+    CONVERT_POINT(x,y);
+    if(black){
+        if(!piece.add(x,y,true))
+            return ;
+    }else{
+        if(!piece.add(x,y,false))
+            return ;
+    }
+    black=!black;
+    update();
+    return ;
 }
 
 void Widget::paintEvent(QPaintEvent *event)
@@ -56,7 +74,9 @@ void Widget::paintEvent(QPaintEvent *event)
     QPen pen;
     pen.setWidth(2);
     p.setPen(pen);
-    p.drawLines(lines,ROW*COLUMN);
 
+    //draw gobang board
+    p.drawLines(lines,ROW*COLUMN);
+    //draw pieces
     piece.draw_pieces(p);
 }

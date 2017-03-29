@@ -1,6 +1,7 @@
 #ifndef PIECE_H
 #define PIECE_H
 #include <QPainter>
+
 #define RADIUS 20
 struct Point
 {
@@ -9,7 +10,7 @@ struct Point
     bool black;
 };
 
-template<int MAX>
+template<int ROW,int COLUMN>
 class Piece
 {
 public:
@@ -22,11 +23,13 @@ public:
 
     void clear();
 
+    bool is_win(int x,int y,bool black);
 private:
-    Point blacks[MAX/2];
-    Point whites[MAX/2];
+    Point blacks[ROW*COLUMN/2];
+    Point whites[ROW*COLUMN/2];
     int black_count;
     int white_count;
+
 
 };
 
