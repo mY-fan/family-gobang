@@ -38,8 +38,8 @@
         row++;\
     if(offset_y/10==2)\
         column++;\
-    x=row*30+left_space-RADIUS/2;\
-    y=column*30+top_space-RADIUS/2;\
+    x=row;\
+    y=column;\
 }
 class Widget : public QWidget
 {

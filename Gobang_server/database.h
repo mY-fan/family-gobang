@@ -21,7 +21,7 @@ struct User_information
 };
 #define TABLE1 "user_information"
 #define TABLE2 "fight_histroy"
-
+/*
 #define CREATE_USER_INFORMATION "create table user_information(\
 user_id int unsigned not null auto_increment primary key,\
 user_name char(20) not null,\
@@ -34,7 +34,24 @@ fight_id int unsigned not null auto_increment primary key,\
 user_id int unsigned not null,\
 win bool not null default 0,\
 date date not null\
+);"*/
+#define CREATE_USER_INFORMATION "create table if not exists user_information(\
+user_id integer,\
+user_name char(20) not null,\
+user_passwd char(20) not null,\
+fight_count int unsigned not null default 0,\
+win_count int unsigned not null default 0,\
+primary key (user_id,user_name)\
 );"
+#define CREATE_FIGHT_HISTORY "create table if not exists fight_history(\
+fight_id integer primary key,\
+user_id int unsigned not null,\
+win bool not null default 0,\
+date date not null\
+);"
+
+
+
 class Database
 {
 public:

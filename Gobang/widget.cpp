@@ -42,8 +42,6 @@ void Widget::init()
 
 void Widget::mousePressEvent(QMouseEvent *event)
 {
-
-    qDebug() << "mouse press " << black ;
     if(event->button()==Qt::RightButton)
         return ;
 
@@ -69,7 +67,6 @@ void Widget::paintEvent(QPaintEvent *event)
 
     this->setStyleSheet("background-color:rgb(234,191,122)");
 
-
     QPainter p(this);
     QPen pen;
     pen.setWidth(2);
@@ -78,5 +75,5 @@ void Widget::paintEvent(QPaintEvent *event)
     //draw gobang board
     p.drawLines(lines,ROW*COLUMN);
     //draw pieces
-    piece.draw_pieces(p);
+    piece.draw_pieces(p,WIDTH,HEIGHT,SPACE);
 }

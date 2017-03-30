@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <QTcpSocket>
 using namespace std;
 
 class House
@@ -19,7 +18,7 @@ public:
     QString house_id;
     QString black;
     QString white;
-    map<QString,QTcpSocket *> look_users;
+    map<QString,int> look_users;
 private:
     House();
 };

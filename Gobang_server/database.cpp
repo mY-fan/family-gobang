@@ -15,6 +15,8 @@ Database::Database(const QString db_type,const QString db_name,const QString use
     try{
         if(!db.open())
             throw runtime_error("open database faile ");
+        else
+            cout << "open database success " ;
     }catch(runtime_error &error){
         cout << error.what() << endl;
     }
@@ -72,9 +74,7 @@ bool Database::insert_user(const QString &name,const QString &passwd)
     if(query.size()==1)
         return false;
     QString str="insert into user_information (user_name,user_passwd) values('"+name+"','"+passwd+"')";
-#ifndef DEBUG
-    cout << str.toStdString() << endl;
-#endif
+
     if(query.exec(str))
         return true;
     else
@@ -84,7 +84,7 @@ bool Database::insert_user(const QString &name,const QString &passwd)
 bool Database::user_information(const QString &user_name,User_information &info) const
 {
     QSqlQuery query=QSqlQuery(db);
-    QString str="select user_name,fight_cunt,win_count from user_information where user_name='"+user_name+"'";
+    QString str="select user_name,fight_count,win_count from user_information where user_name='"+user_name+"'";
     query.exec(str);
     QSqlRecord rec = query.record();
     int nameCol=rec.indexOf("user_name");

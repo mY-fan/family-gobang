@@ -5,38 +5,35 @@ Piece<ROW,COLUMN>::Piece()
     this->black_count=0;
     this->white_count=0;
 
-
+    for(int i=0;i<=COLUMN;i++)
+        for(int j=0;j<=ROW;j++)
+            pieces[i][j]=0;
 }
 
 template<int ROW,int COLUMN>
 bool Piece<ROW,COLUMN>::add(int x,int y,bool black)
 {
-    for(int i=0;i<white_count;i++)
-        if(whites[i].x==x && whites[i].y==y)
-            return false;
-    for(int i=0;i<black_count;i++)
-        if(blacks[i].x==x && blacks[i].y==y)
-            return false;
+    x++;
+    y++;
+    if(x<=0 || x>COLUMN || y<=0 || y>ROW)
+        return false;
+    if(pieces[x][y]!=0)
+        return false;
 
-
-    if(black==true){
-        if(black_count>=ROW*COLUMN/2)
-            return false;
-        this->blacks[black_count].x=x;
-        this->blacks[black_count].y=y;
-        this->blacks[black_count].black=black;
-        this->black_count++;
-
+    if(black){
+        pieces[x][y]=1;
+        black_count++;
+        if(is_win(x,y,black))
+            qDebug() << "black win";
 
     }else{
-        if(white_count>=ROW*COLUMN/2)
-            return false;
-        this->whites[white_count].x=x;
-        this->whites[white_count].y=y;
-        this->whites[white_count].black=black;
-        this->white_count++;
+        pieces[x][y]=-1;
+        white_count++;
+        if(is_win(x,y,black))
+            qDebug() << "white win";
 
     }
+
     return true;
 }
 
@@ -47,16 +44,30 @@ int Piece<ROW,COLUMN>::count()
 }
 
 template<int ROW,int COLUMN>
-void Piece<ROW,COLUMN>::draw_pieces(QPainter &painter)
+void Piece<ROW,COLUMN>::draw_pieces(QPainter &painter,int width,int height,int space)
 {
+    int left_space=width-COLUMN*space+space;
+    int top_space=(height-ROW*space+space)/2;
+
     painter.setPen(Qt::white);
     painter.setBrush(QBrush(Qt::white,Qt::SolidPattern));
-    for(int i=0;i<this->white_count;i++)
-        painter.drawEllipse(whites[i].x,whites[i].y,RADIUS,RADIUS);
+    for(int i=1;i<=COLUMN;i++){
+        for(int j=1;j<=ROW;j++){
+            if(pieces[i][j]==-1)
+                painter.drawEllipse((i-1)*space+left_space-RADIUS/2,(j-1)*space+top_space-RADIUS/2,RADIUS,RADIUS);
+        }
+    }
+
     painter.setPen(Qt::black);
     painter.setBrush(QBrush(Qt::black,Qt::SolidPattern));
-    for(int i=0;i<this->black_count;i++)
-        painter.drawEllipse(blacks[i].x,blacks[i].y,RADIUS,RADIUS);
+    for(int i=1;i<=COLUMN;i++){
+        for(int j=1;j<=ROW;j++){
+            if(pieces[i][j]==1)
+                painter.drawEllipse((i-1)*space+left_space-RADIUS/2,(j-1)*space+top_space-RADIUS/2,RADIUS,RADIUS);
+        }
+    }
+
+
 }
 
 template<int ROW,int COLUMN>
@@ -64,6 +75,9 @@ void Piece<ROW,COLUMN>::clear()
 {
     this->black_count=0;
     this->white_count=0;
+    for(int i=0;i<=COLUMN;i++)
+        for(int j=0;j<=ROW;j++)
+            pieces[i][j]=0;
 }
 
 template<int ROW,int COLUMN>
@@ -73,11 +87,37 @@ bool Piece<ROW,COLUMN>::is_win(int x,int y,bool black)
         return false;
     if(black==false && white_count<5)
         return false;
-    int row,column,count;
 
+    int count=1;
+    int bl;
+    if(black)
+        bl=1;
+    else
+        bl=-1;
 
-#define DETECT(x,y,black,offsetx,offsety,count) {\
-    while(x>0 && x<=ROW && y>0 && y<=COLUMN)
+    DETECT(x,y,-1,-1,bl,count);
+    DETECT(x,y,1,1,bl,count);
+    if(count>=5)
+        return true;
 
+    count=1;
+    DETECT(x,y,1,-1,bl,count);
+    DETECT(x,y,-1,1,bl,count);
+    if(count>=5)
+        return true;
+
+    count=1;
+    DETECT(x,y,0,1,bl,count);
+    DETECT(x,y,0,-1,bl,count);
+    if(count>=5)
+        return true;
+
+    count=1;
+    DETECT(x,y,1,0,bl,count);
+    DETECT(x,y,-1,0,bl,count);
+    if(count>=5)
+        return true;
+
+    return false;
 
 }

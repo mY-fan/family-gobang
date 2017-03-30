@@ -17,8 +17,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     database.cpp \
-    house.cpp
+    house.cpp \
+    service.cpp
 
 HEADERS += \
     database.h \
-    house.h
+    house.h \
+    service.h
